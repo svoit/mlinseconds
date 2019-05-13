@@ -3,6 +3,7 @@
 
 
 - [Hello Xor (Week 1 / 2)](#hello-xor)
+- [General CPU (Week 3)](#generalCpu)
 
 ------
 
@@ -24,10 +25,24 @@ https://www.facebook.com/notes/machine-learning-in-seconds-deep-learning-artific
  
 ### Solution:
 [helloXor.py](../master/mlis/problems/helloXor.py)
-> Test rate (max/mean/min/limit) = 1.000/1.000/1.000/1.000
+```
+Test rate (max/mean/min/limit) = 1.000/1.000/1.000/1.000
+Average steps = 5.300
+Average time = 0.005/2.000
+Average size = 41.000/100.000
+```
 
-> Average steps = 5.300
+### II. General CPU (Week 3)
 
-> Average time = 0.005/2.000
+In General CPU problem you are asked to learn a random function with n [4-7] parameters.
 
-> Average size = 41.000/100.000
+https://www.facebook.com/notes/machine-learning-in-seconds-deep-learning-artificial-intelligence-ai/general-cpu/198587934277109/
+ 
+### Solution:
+[generalCpu.py](../master/mlis/problems/generalCpu.py)
+```
+Test rate (max/mean/min/limit) = 1.000/1.000/1.000/1.000
+Average steps = 6.900
+Average time = 0.025/2.000
+Average size = 8471.000/10000.000
+``` 
