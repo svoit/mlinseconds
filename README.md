@@ -2,7 +2,7 @@
 # <p align="left">Join us at https://www.facebook.com/groups/195065914629311/</p>
 
 
-- [Hello Xor (Week 1 / 2)](#hello-xor)
+- [Hello Xor (Week 1 / 2)](#i-hello-xor-week-1--2)
 - [General CPU (Week 3)](#ii-general-cpu-week-3)
 
 ------
