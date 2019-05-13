@@ -3,7 +3,7 @@
 
 
 - [Hello Xor (Week 1 / 2)](#hello-xor)
-- [General CPU (Week 3)](#generalCpu)
+- [General CPU (Week 3)](#ii-general-cpu-week-3)
 
 ------
 
