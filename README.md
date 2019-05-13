@@ -1,4 +1,4 @@
-# Machine Learning in second
+# Machine Learning in seconds
 # <p align="left">Join us at https://www.facebook.com/groups/195065914629311/</p>
 
 
