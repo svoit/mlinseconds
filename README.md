@@ -4,6 +4,7 @@
 
 - [Hello Xor (Week 1 / 2)](#i-hello-xor-week-1--2)
 - [General CPU (Week 3)](#ii-general-cpu-week-3)
+- [Find Me (Week 4)](#iIi-find-me-week-4)
 
 ------
 
