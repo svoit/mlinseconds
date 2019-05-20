@@ -1,5 +1,6 @@
-# Machine Learning in seconds
-# <p align="left">https://www.facebook.com/groups/195065914629311/</p>
+# Machine Learning in seconds 
+# Deep Learning / Artificial Intelligence / AI
+### https://www.facebook.com/groups/195065914629311/
 
 
 - [Hello Xor (Week 1 / 2)](#i-hello-xor-week-1--2)
