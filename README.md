@@ -46,3 +46,15 @@ Average steps = 6.900
 Average time = 0.025/2.000
 Average size = 8471.000/10000.000
 ``` 
+
+
+### III. Find Me (Week 4)
+
+In Find Me problem you are asked to learn a random function with 8 inputs, but there are up to 32 random input added and you don’t know which input is good inputs and which is random inputs. Generated data splited in 2 equal parts, first one used for training, second one used for testing.
+
+Time limit: 2.0 seconds
+
+https://www.facebook.com/notes/machine-learning-in-seconds-deep-learning-artificial-intelligence-ai/find-me/203685497100686/
+ 
+### Solution:
+[findMe.py](../master/mlis/problems/findMe.py)
