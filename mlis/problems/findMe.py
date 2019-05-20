@@ -9,23 +9,54 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from ..utils import solutionmanager as sm
+from ..utils import gridsearch as gs
 
 class SolutionModel(nn.Module):
-    def __init__(self, input_size, output_size):
+    def __init__(self, input_size, output_size, solution):
         super(SolutionModel, self).__init__()
+        self.solution = solution
         self.input_size = input_size
-        self.hidden_size = 32
+        self.output_size = output_size
+        self.hidden_size = solution.hidden_size
+        self.lr = solution.lr
+        self.momentum = solution.momentum
+
         self.linear1 = nn.Linear(input_size, self.hidden_size)
-        self.linear2 = nn.Linear(self.hidden_size, self.hidden_size)
-        self.linear3 = nn.Linear(self.hidden_size, output_size)
+        self.linear1_1 = nn.Linear(self.hidden_size, self.hidden_size)
+        self.linear1_2 = nn.Linear(self.hidden_size, self.hidden_size)
+        self.linear1_3 = nn.Linear(self.hidden_size, self.hidden_size)
+        self.linear2 = nn.Linear(self.hidden_size, self.output_size)
+
+        self.batch_norm1 = nn.BatchNorm1d(self.hidden_size, track_running_stats=False)
+        self.batch_norm1_1 = nn.BatchNorm1d(self.hidden_size, track_running_stats=False)
+        self.batch_norm1_2 = nn.BatchNorm1d(self.hidden_size, track_running_stats=False)
+        self.batch_norm1_3 = nn.BatchNorm1d(self.hidden_size, track_running_stats=False)
+        self.batch_norm2 = nn.BatchNorm1d(self.output_size, track_running_stats=False)
+
+        if self.solution.grid_search.enabled:
+            torch.manual_seed(solution.random)
 
     def forward(self, x):
         x = self.linear1(x)
+        x = self.batch_norm1(x)
         x = F.relu(x)
+
+        x = self.linear1_1(x)
+        x = self.batch_norm1_1(x)
+        x = F.relu(x)
+
+        x = self.linear1_2(x)
+        x = self.batch_norm1_2(x)
+        x = F.relu(x)
+
+        x = self.linear1_3(x)
+        x = self.batch_norm1_3(x)
+        x = F.relu(x)
+
         x = self.linear2(x)
-        x = F.relu(x)
-        x = self.linear3(x)
+        x = self.batch_norm2(x)
         x = torch.sigmoid(x)
+
         return x
 
     def calc_loss(self, output, target):
@@ -39,36 +70,59 @@ class SolutionModel(nn.Module):
 
 class Solution():
     def __init__(self):
-        self = self
+        self.lr = 0.1
+        self.lr_grid = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.2, 1.5]
+
+        self.hidden_size = 25
+        self.hidden_size_grid = [15, 20, 25, 30, 35, 40, 45, 50, 55]
+
+        self.momentum = 0.7
+        self.random = 0
+        self.error = 0.55
+        self.batch_size = 128
+
+        self.grid_search = gs.GridSearch(self).set_enabled(False)
 
     def create_model(self, input_size, output_size):
-        return SolutionModel(input_size, output_size)
+        return SolutionModel(input_size, output_size, self)
 
     # Return number of steps used
     def train_model(self, model, train_data, train_target, context):
         step = 0
         # Put model in train mode
         model.train()
+        number_of_batches = int(train_data.size(0)/self.batch_size)
+        batches_counter = 0
+        optimizer = optim.SGD(model.parameters(), lr=model.lr, momentum=model.momentum)
         while True:
+            batch_index = step % number_of_batches
+            data_batch = train_data[self.batch_size*batch_index:self.batch_size*(batch_index+1)]
+            target_batch = train_target[self.batch_size*batch_index:self.batch_size*(batch_index+1)]
             time_left = context.get_timer().get_time_left()
             # No more time left, stop training
             if time_left < 0.1:
                 break
-            optimizer = optim.SGD(model.parameters(), lr=1)
-            data = train_data
-            target = train_target
             # model.parameters()...gradient set to zero
             optimizer.zero_grad()
-            # evaluate model => model.forward(data)
-            output = model(data)
+            # evaluate model => model.forward(data_batch)
+            output = model(data_batch)
             # if x < 0.5 predict 0 else predict 1
             predict = model.calc_predict(output)
             # Number of correct predictions
-            correct = predict.eq(target.view_as(predict)).long().sum().item()
+            correct = predict.eq(target_batch.view_as(predict)).long().sum().item()
             # Total number of needed predictions
             total = predict.view(-1).size(0)
-            # calculate loss
-            loss = model.calc_loss(output, target)
+            # No more mini-batches left, stop training
+            loss = model.calc_loss(output, target_batch)
+            residue = (output.data-target_batch.data).abs()
+            if residue.max() < self.error:
+                batches_counter += 1
+                if batches_counter >= number_of_batches:
+                    break
+            else:
+                batches_counter = 0
+            if model.solution.grid_search.enabled:
+                self.grid_search.log_step_value('loss', loss.item(), step)
             # calculate deriviative of model.forward() and put it in model.parameters()...gradient
             loss.backward()
             # print progress of the learning
